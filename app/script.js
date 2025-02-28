@@ -16,7 +16,7 @@ document.getElementById("submit-btn").addEventListener("click", async () => {
     try {
         const baseUrl = window.location.origin.includes("localhost")
   ? "http://localhost:8080"
-  : "https://guestcountcheck-as5e4.kinsta.app/"; // Replace with your actual Kinsta app URL
+  : "https://guestcountcheck-as5e4.kinsta.app"; // Replace with your actual Kinsta URL
 
 const url = `${baseUrl}/export?from=${fromDate}&to=${toDate}`;
 
