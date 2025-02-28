@@ -13,7 +13,7 @@ if (!fs.existsSync(dotenvPath)) {
     console.log("✅ .env file found!");
 }
 
-require("dotenv").config({ path: dotenvPath });
+require("dotenv").config(); // Remove custom path
 
 console.log("Loaded ENV Variables:");
 console.log("C7_APP_ID:", process.env.C7_APP_ID);
