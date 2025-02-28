@@ -1,0 +1,61 @@
+/* Import Gilda Display font */
+@import url('https://fonts.googleapis.com/css2?family=Gilda+Display&display=swap');
+
+body {
+    font-family: 'Gilda Display', serif;
+    font-size: 14px;
+    background-color: #D8D1AE;
+    color: #715100;
+    text-align: center;
+    padding: 40px;
+}
+
+/* Form container */
+form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    background: #EFE8D4;
+    padding: 20px;
+    border-radius: 10px;
+    width: 80%;
+    max-width: 400px;
+    margin: 20px auto;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Input fields & Button width */
+input, button {
+    width: 80%;
+    max-width: 300px; /* Set consistent max width for desktop */
+    padding: 10px;
+    border: 1px solid #715100;
+    border-radius: 5px;
+    font-size: 14px;
+    text-align: center;
+    background-color: #F9F4E9;
+    color: #715100;
+}
+
+/* Submit Button */
+button {
+    background-color: #5A3E00;
+    color: white;
+    border: none;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+button:hover {
+    background-color: #3D2900;
+}
+
+/* Responsive Design */
+@media (max-width: 600px) {
+    input, button {
+        width: 90%; /* Increase width on smaller screens */
+    }
+}
