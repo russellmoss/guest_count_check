@@ -46,8 +46,9 @@ app.get("/export", async (req, res) => {
 
   // Ensure the date is formatted correctly for Commerce7 API (YYYY-MM-DD)
   function formatDate(date) {
-    return new Date(date).toISOString().split("T")[0]; // Converts YYYY-MM-DD
+    return new Date(date).toISOString(); // Converts YYYY-MM-DDT00:00:00.000Z
   }
+  
 
   try {
     if (!from && !to) {
@@ -61,14 +62,13 @@ app.get("/export", async (req, res) => {
 
     // ✅ Correct API query format
     let url = `https://api.commerce7.com/v1/order?`;
-    if (startDate && endDate) {
-      url += `orderPaidDate=btw:${startDate}|${endDate}`;
-    } else if (startDate) {
-      url += `orderPaidDate=gte:${startDate}`;
-    } else if (endDate) {
-      url += `orderPaidDate=lte:${endDate}`;
-    }
-
+if (startDate && endDate) {
+  url += `orderPaidDate=btw:${startDate}|${endDate}`;
+} else if (startDate) {
+  url += `orderPaidDate=gte:${startDate}`;
+} else if (endDate) {
+  url += `orderPaidDate=lte:${endDate}`;
+}
     console.log("Commerce7 Request URL:", url);
 
     const response = await axios.get(url, authConfig);
