@@ -14,7 +14,12 @@ document.getElementById("submit-btn").addEventListener("click", async () => {
     statusMessage.textContent = "Loading...";
     
     try {
-        const url = `http://localhost:3000/export?from=${fromDate}&to=${toDate}`;
+        const baseUrl = window.location.origin.includes("localhost")
+  ? "http://localhost:8080"
+  : "https://your-app.kinsta.app"; // Replace with your actual Kinsta app URL
+
+const url = `${baseUrl}/export?from=${fromDate}&to=${toDate}`;
+
         const response = await fetch(url);
         
         if (!response.ok) {
