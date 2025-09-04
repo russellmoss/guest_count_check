@@ -86,36 +86,46 @@ app.get("/test-connection", async (req, res) => {
 
 app.get("/export", async (req, res) => {
   let { from, to } = req.query;
+  let url = "";
+  let startDate = undefined;
+  let endDate = undefined;
 
   // Ensure the date is formatted correctly for Commerce7 API (YYYY-MM-DD)
   function formatDate(date) {
-    const d = new Date(date);
-    const year = d.getFullYear();
-    const month = String(d.getMonth() + 1).padStart(2, '0');
-    const day = String(d.getDate()).padStart(2, '0');
-    return `${year}-${month}-${day}`;
+    try {
+      const d = new Date(date);
+      if (isNaN(d.getTime())) {
+        throw new Error(`Invalid date: ${date}`);
+      }
+      const year = d.getFullYear();
+      const month = String(d.getMonth() + 1).padStart(2, '0');
+      const day = String(d.getDate()).padStart(2, '0');
+      return `${year}-${month}-${day}`;
+    } catch (err) {
+      console.error("Date formatting error:", err);
+      throw new Error(`Failed to format date: ${date}`);
+    }
   }
-  
 
   try {
     if (!from && !to) {
       return res.status(400).json({ message: "At least one date is required." });
     }
 
-    const startDate = from ? formatDate(from) : undefined;
-    const endDate = to ? formatDate(to) : undefined;
+    startDate = from ? formatDate(from) : undefined;
+    endDate = to ? formatDate(to) : undefined;
 
     console.log(`Fetching orders from ${startDate} to ${endDate}...`);
 
-    // ✅ Correct API query format
-    let url = `https://api.commerce7.com/v1/order?`;
-if (startDate && endDate) {
-  url += `orderPaidDate=btw:${startDate}|${endDate}`;
-} else if (startDate) {
-  url += `orderPaidDate=gte:${startDate}`;
-} else if (endDate) {
-  url += `orderPaidDate=lte:${endDate}`;
-}
+    // Build the URL (don't use 'let' here, just assign to existing variable)
+    url = `https://api.commerce7.com/v1/order?`;
+    if (startDate && endDate) {
+      url += `orderPaidDate=btw:${startDate}|${endDate}`;
+    } else if (startDate) {
+      url += `orderPaidDate=gte:${startDate}`;
+    } else if (endDate) {
+      url += `orderPaidDate=lte:${endDate}`;
+    }
     console.log("Commerce7 Request URL:", url);
 
     const response = await axios.get(url, authConfig);
