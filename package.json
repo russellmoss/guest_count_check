@@ -1,4 +1,12 @@
 {
+  "name": "guest-count-check",
+  "version": "1.0.0",
+  "description": "Guest count check dashboard for Milea Estate Vineyard",
+  "main": "app/server.js",
+  "scripts": {
+    "start": "node app/server.js",
+    "dev": "node app/server.js"
+  },
   "dependencies": {
     "axios": "^1.8.1",
     "body-parser": "^1.20.3",

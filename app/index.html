@@ -3,23 +3,131 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Milea Guest Count Check</title>
+    <title>Milea Guest Count Dashboard</title>
     <link rel="icon" href="data:,">
-    <link rel="stylesheet" href="styles.css"> <!-- Link to styles.css -->
-    <script defer src="script.js"></script>
+    <link rel="stylesheet" href="styles.css">
+    <script defer src="dashboard.js"></script>
 </head>
 <body>
-    <h1>Milea Guest Count Check</h1>
-    <p>Choose Date Range:</p>
-    
-    <label for="from-date">From:</label>
-    <input type="date" id="from-date">
-    
-    <label for="to-date">To:</label>
-    <input type="date" id="to-date">
-    
-    <button id="submit-btn">Submit</button>
-    
-    <p id="status-message" style="display:none;">Loading...</p>
+    <div class="container">
+        <header class="main-header">
+            <h1>Milea Guest Count Dashboard</h1>
+            <p class="subtitle">Orders Missing Guest Counts</p>
+        </header>
+
+        <!-- Sticky Filter Section -->
+        <div class="filter-section">
+            <div class="date-controls">
+                <div class="date-group">
+                    <label for="from-date">From Date:</label>
+                    <input type="date" id="from-date" class="date-input">
+                </div>
+                <div class="date-group">
+                    <label for="to-date">To Date:</label>
+                    <input type="date" id="to-date" class="date-input">
+                </div>
+            </div>
+
+            <div class="action-buttons">
+                <button id="load-orders-btn" class="btn btn-primary">
+                    <span class="btn-icon">📊</span>
+                    Load Orders
+                </button>
+                <button id="export-excel-btn" class="btn btn-secondary" disabled>
+                    <span class="btn-icon">📁</span>
+                    Export to Excel
+                </button>
+            </div>
+
+            <div class="filter-controls">
+                <div class="filter-group">
+                    <label for="associate-filter">Filter by Associate:</label>
+                    <div class="multi-select-container">
+                        <div class="multi-select-header">
+                            <span id="associate-selection-text">All Associates</span>
+                            <span class="dropdown-arrow">▼</span>
+                        </div>
+                        <div class="multi-select-dropdown" id="associate-dropdown">
+                            <div class="dropdown-actions">
+                                <button type="button" class="select-all-btn">Select All</button>
+                                <button type="button" class="clear-all-btn">Clear All</button>
+                            </div>
+                            <div class="dropdown-options" id="associate-options">
+                                <!-- Options will be populated by JavaScript -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="filter-group">
+                    <label for="order-search">Search Orders:</label>
+                    <input type="text" id="order-search" placeholder="Enter order number..." class="search-input">
+                </div>
+            </div>
+        </div>
+
+        <!-- Status Message -->
+        <div id="status-message" class="status-message" style="display:none;">
+            <span class="status-icon">⏳</span>
+            <span class="status-text">Loading...</span>
+        </div>
+
+        <!-- Results Section -->
+        <div class="results-section">
+            <div class="results-header">
+                <h2 id="results-title">No orders loaded</h2>
+                <div class="view-toggle">
+                    <button id="table-view-btn" class="view-btn active">📋 Table</button>
+                    <button id="card-view-btn" class="view-btn">🎴 Cards</button>
+                </div>
+            </div>
+
+            <!-- Table View -->
+            <div id="table-view" class="table-view">
+                <table class="orders-table">
+                    <thead>
+                        <tr>
+                            <th class="sortable" data-sort="orderNumber">
+                                Order Number <span class="sort-icon">↕</span>
+                            </th>
+                            <th class="sortable" data-sort="salesAssociate">
+                                Sales Associate <span class="sort-icon">↕</span>
+                            </th>
+                            <th class="sortable" data-sort="orderDate">
+                                Order Date <span class="sort-icon">↕</span>
+                            </th>
+                            <th class="sortable" data-sort="totalAmount">
+                                Total Amount <span class="sort-icon">↕</span>
+                            </th>
+                            <th>Details</th>
+                        </tr>
+                    </thead>
+                    <tbody id="orders-table-body">
+                        <!-- Table rows will be populated by JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Card View -->
+            <div id="card-view" class="card-view" style="display:none;">
+                <div id="orders-cards-container" class="cards-container">
+                    <!-- Cards will be populated by JavaScript -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Order Details Modal -->
+        <div id="order-details-modal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 id="modal-order-title">Order Details</h3>
+                    <button class="modal-close">&times;</button>
+                </div>
+                <div class="modal-body" id="modal-order-details">
+                    <!-- Order details will be populated by JavaScript -->
+                </div>
+            </div>
+        </div>
+    </div>
 </body>
 </html>
