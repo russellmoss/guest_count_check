@@ -14,11 +14,8 @@ document.getElementById("submit-btn").addEventListener("click", async () => {
     statusMessage.textContent = "Loading...";
     
     try {
-        const baseUrl = window.location.origin.includes("localhost")
-  ? "http://localhost:8080"
-  : "https://guestcountcheck-as5e4.kinsta.app"; // Replace with your actual Kinsta URL
-
-const url = `${baseUrl}/export?from=${fromDate}&to=${toDate}`;
+        // Use relative URL so it works in both development and production
+        const url = `/export?from=${fromDate}&to=${toDate}`;
 
         const response = await fetch(url);
         

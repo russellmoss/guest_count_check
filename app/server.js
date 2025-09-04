@@ -20,13 +20,33 @@ console.log("C7_APP_ID:", process.env.C7_APP_ID);
 console.log("C7_API_KEY:", process.env.C7_API_KEY ? "Loaded" : "Missing");
 console.log("C7_TENANT_ID:", process.env.C7_TENANT_ID);
 
+// Validate required environment variables
+const requiredEnvVars = ['C7_APP_ID', 'C7_API_KEY', 'C7_TENANT_ID'];
+const missingVars = requiredEnvVars.filter(varName => !process.env[varName]);
+
+if (missingVars.length > 0) {
+    console.error('🚨 Missing required environment variables:', missingVars.join(', '));
+    console.error('Please check your Kinsta environment variables configuration');
+    process.exit(1);
+}
+
+console.log('✅ All required environment variables loaded');
+
 const axios = require("axios");
 const XLSX = require("xlsx");
 
 const app = express();
 const PORT = process.env.PORT || 8080;
 
-app.use(cors());
+const corsOptions = {
+    origin: process.env.NODE_ENV === 'production' 
+        ? ['https://guestcountcheck-as5e4.kinsta.app'] 
+        : true,
+    credentials: true,
+    optionsSuccessStatus: 200
+};
+
+app.use(cors(corsOptions));
 app.use(express.json());
 app.use(express.static(path.join(__dirname, ".")));
 
@@ -41,12 +61,39 @@ const authConfig = {
   },
 };
 
+// Test endpoint to verify Commerce7 connection
+app.get("/test-connection", async (req, res) => {
+    try {
+        console.log("Testing Commerce7 connection...");
+        const response = await axios.get(
+            "https://api.commerce7.com/v1/order?limit=1",
+            authConfig
+        );
+        res.json({ 
+            success: true, 
+            message: "Commerce7 connection successful",
+            orderCount: response.data.orders ? response.data.orders.length : 0
+        });
+    } catch (error) {
+        console.error("Commerce7 connection test failed:", error.response?.data || error.message);
+        res.status(500).json({ 
+            success: false, 
+            message: "Commerce7 connection failed",
+            error: error.response?.data || error.message 
+        });
+    }
+});
+
 app.get("/export", async (req, res) => {
   let { from, to } = req.query;
 
   // Ensure the date is formatted correctly for Commerce7 API (YYYY-MM-DD)
   function formatDate(date) {
-    return new Date(date).toISOString(); // Converts YYYY-MM-DDT00:00:00.000Z
+    const d = new Date(date);
+    const year = d.getFullYear();
+    const month = String(d.getMonth() + 1).padStart(2, '0');
+    const day = String(d.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
   }
   
 
@@ -112,8 +159,23 @@ if (startDate && endDate) {
     res.setHeader("Content-Type", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
     res.send(buffer);
   } catch (error) {
-    console.error("Error fetching orders:", error.response?.data || error.message);
-    res.status(500).json({ message: "Error fetching orders", error: error.response?.data || error.message });
+    console.error("Detailed error:", {
+      message: error.message,
+      response: error.response?.data,
+      status: error.response?.status,
+      url: url,
+      startDate: startDate,
+      endDate: endDate
+    });
+    
+    res.status(500).json({ 
+      message: "Error fetching orders", 
+      error: error.response?.data?.message || error.message,
+      details: process.env.NODE_ENV === 'development' ? {
+        url: url,
+        dates: { from: startDate, to: endDate }
+      } : undefined
+    });
   }
 });
 
