@@ -1,0 +1,35 @@
+# ===========================================
+# Guest Count Checker - Environment Variables
+# ===========================================
+# Copy this file to .env and replace the placeholder values
+
+# ===========================================
+# Commerce7 API Configuration
+# ===========================================
+# Get these from your Commerce7 admin panel: Settings → API
+C7_APP_ID=your_commerce7_app_id_here
+C7_API_KEY=your_commerce7_api_key_here
+C7_TENANT_ID=milea-estate-vineyard
+
+# ===========================================
+# Supabase Configuration
+# ===========================================
+# Get these from your Supabase project dashboard: Settings → API
+SUPABASE_URL=https://your-project-id.supabase.co
+SUPABASE_SERVICE_KEY=your_supabase_service_role_key_here
+SUPABASE_ANON_KEY=your_supabase_anon_key_here
+
+# ===========================================
+# Application Configuration
+# ===========================================
+# Environment: 'development' for local, 'production' for deployment
+NODE_ENV=development
+
+# Server port (optional, defaults to 8080)
+PORT=8080
+
+# ===========================================
+# CORS Configuration (for production)
+# ===========================================
+# Add your production domain here
+ALLOWED_ORIGINS=https://your-domain.com,https://your-kinsta-app.kinsta.app

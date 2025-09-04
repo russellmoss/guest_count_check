@@ -20,22 +20,25 @@ console.log("Loaded ENV Variables:");
 console.log("C7_APP_ID:", process.env.C7_APP_ID);
 console.log("C7_API_KEY:", process.env.C7_API_KEY ? "Loaded" : "Missing");
 console.log("C7_TENANT_ID:", process.env.C7_TENANT_ID);
+console.log("SUPABASE_URL:", process.env.SUPABASE_URL);
+console.log("SUPABASE_SERVICE_KEY:", process.env.SUPABASE_SERVICE_KEY ? "Loaded" : "Missing");
 
 // Validate required environment variables
-const requiredEnvVars = ['C7_APP_ID', 'C7_API_KEY', 'C7_TENANT_ID'];
+const requiredEnvVars = ['C7_APP_ID', 'C7_API_KEY', 'C7_TENANT_ID', 'SUPABASE_URL', 'SUPABASE_SERVICE_KEY'];
 const missingVars = requiredEnvVars.filter(varName => !process.env[varName]);
 
 if (missingVars.length > 0) {
     console.error('🚨 Missing required environment variables:', missingVars.join(', '));
-    console.error('Please check your Kinsta environment variables configuration');
+    console.error('Please check your environment variables configuration');
+    console.error('See app/env-template.txt for required variables');
     process.exit(1);
 }
 
 console.log('✅ All required environment variables loaded');
 
 // Supabase configuration
-const SUPABASE_URL = 'https://ggfpkczvvnubjiuiqllv.supabase.co';
-const SUPABASE_SERVICE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdnZnBrY3p2dm51YmppdWlxbGx2Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc1MzA5Mjc4NywiZXhwIjoyMDY4NjY4Nzg3fQ.ql3zEAdkKyQcJS3t0-il4YITVpsQcPmfJbajNy6EeqM';
+const SUPABASE_URL = process.env.SUPABASE_URL;
+const SUPABASE_SERVICE_KEY = process.env.SUPABASE_SERVICE_KEY;
 const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_KEY);
 
 const axios = require("axios");
@@ -46,7 +49,7 @@ const PORT = process.env.PORT || 8080;
 
 const corsOptions = {
     origin: process.env.NODE_ENV === 'production' 
-        ? ['https://guestcountcheck-as5e4.kinsta.app'] 
+        ? (process.env.ALLOWED_ORIGINS ? process.env.ALLOWED_ORIGINS.split(',') : ['https://guestcountcheck-as5e4.kinsta.app'])
         : true,
     credentials: true,
     optionsSuccessStatus: 200
@@ -114,7 +117,7 @@ app.get("/test-connection", async (req, res) => {
 });
 
 // New API endpoint to fetch orders for dashboard display
-app.get("/api/orders", authenticateUser, async (req, res) => {
+app.get("/api/orders", async (req, res) => {
   let { from, to } = req.query;
   let url = "";
   let startDate = undefined;
@@ -465,7 +468,7 @@ app.get("/api/associates", async (req, res) => {
   }
 });
 
-app.get("/export", authenticateUser, async (req, res) => {
+app.get("/export", async (req, res) => {
   let { from, to, associates, search } = req.query;
   let url = "";
   let startDate = undefined;

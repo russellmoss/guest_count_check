@@ -14,6 +14,7 @@ class GuestCountDashboard {
             error: null
         };
 
+
         // DOM Elements
         this.elements = {
             loadOrdersBtn: document.getElementById('load-orders-btn'),
@@ -43,6 +44,7 @@ class GuestCountDashboard {
         this.initializeEventListeners();
         this.setDefaultDates();
     }
+
 
     // Initialize all event listeners
     initializeEventListeners() {
