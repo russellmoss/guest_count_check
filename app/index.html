@@ -6,13 +6,22 @@
     <title>Milea Guest Count Dashboard</title>
     <link rel="icon" href="data:,">
     <link rel="stylesheet" href="styles.css">
+    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
     <script defer src="dashboard.js"></script>
 </head>
 <body>
     <div class="container">
         <header class="main-header">
-            <h1>Milea Guest Count Dashboard</h1>
-            <p class="subtitle">Orders Missing Guest Counts</p>
+            <div class="header-content">
+                <div class="header-text">
+                    <h1>Milea Guest Count Dashboard</h1>
+                    <p class="subtitle">Orders Missing Guest Counts</p>
+                </div>
+                <div class="user-info">
+                    <span id="user-email"></span>
+                    <button id="logout-btn" class="logout-btn">Logout</button>
+                </div>
+            </div>
         </header>
 
         <!-- Sticky Filter Section -->
@@ -129,5 +138,47 @@
             </div>
         </div>
     </div>
+
+    <script>
+        // Initialize Supabase
+        const supabaseUrl = 'https://ggfpkczvvnubjiuiqllv.supabase.co';
+        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdnZnBrY3p2dm51YmppdWlxbGx2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTMwOTI3ODcsImV4cCI6MjA2ODY2ODc4N30.Pk6uOa1mCAhETdAyHsZTOCT8xSggTMS5ZGNzjq28Zos';
+        const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+
+        // Check authentication
+        async function checkAuth() {
+            const { data: { session } } = await supabase.auth.getSession();
+            
+            if (!session) {
+                // Not authenticated, redirect to login
+                window.location.href = '/login.html';
+                return;
+            }
+            
+            // Authenticated, show user info
+            document.getElementById('user-email').textContent = session.user.email;
+        }
+
+        // Logout function
+        async function logout() {
+            const { error } = await supabase.auth.signOut();
+            if (!error) {
+                window.location.href = '/login.html';
+            }
+        }
+
+        // Event listeners
+        document.getElementById('logout-btn').addEventListener('click', logout);
+
+        // Check auth on page load
+        checkAuth();
+
+        // Listen for auth changes
+        supabase.auth.onAuthStateChange((event, session) => {
+            if (event === 'SIGNED_OUT' || !session) {
+                window.location.href = '/login.html';
+            }
+        });
+    </script>
 </body>
 </html>

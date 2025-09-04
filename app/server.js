@@ -4,6 +4,7 @@ const express = require("express");
 const cors = require("cors");
 const path = require("path");
 const fs = require("fs");
+const { createClient } = require('@supabase/supabase-js');
 const dotenvPath = path.resolve(__dirname, ".env");
 
 console.log("Looking for .env at:", dotenvPath);
@@ -32,6 +33,11 @@ if (missingVars.length > 0) {
 
 console.log('✅ All required environment variables loaded');
 
+// Supabase configuration
+const SUPABASE_URL = 'https://ggfpkczvvnubjiuiqllv.supabase.co';
+const SUPABASE_SERVICE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdnZnBrY3p2dm51YmppdWlxbGx2Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc1MzA5Mjc4NywiZXhwIjoyMDY4NjY4Nzg3fQ.ql3zEAdkKyQcJS3t0-il4YITVpsQcPmfJbajNy6EeqM';
+const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_KEY);
+
 const axios = require("axios");
 const XLSX = require("xlsx");
 
@@ -49,6 +55,29 @@ const corsOptions = {
 app.use(cors(corsOptions));
 app.use(express.json());
 app.use(express.static(path.join(__dirname, ".")));
+
+// Authentication middleware
+async function authenticateUser(req, res, next) {
+    try {
+        const authHeader = req.headers.authorization;
+        if (!authHeader || !authHeader.startsWith('Bearer ')) {
+            return res.status(401).json({ error: 'No authorization token provided' });
+        }
+
+        const token = authHeader.substring(7);
+        const { data: { user }, error } = await supabase.auth.getUser(token);
+
+        if (error || !user) {
+            return res.status(401).json({ error: 'Invalid or expired token' });
+        }
+
+        req.user = user;
+        next();
+    } catch (error) {
+        console.error('Authentication error:', error);
+        return res.status(401).json({ error: 'Authentication failed' });
+    }
+}
 
 const authConfig = {
   auth: {
@@ -85,7 +114,7 @@ app.get("/test-connection", async (req, res) => {
 });
 
 // New API endpoint to fetch orders for dashboard display
-app.get("/api/orders", async (req, res) => {
+app.get("/api/orders", authenticateUser, async (req, res) => {
   let { from, to } = req.query;
   let url = "";
   let startDate = undefined;
@@ -436,7 +465,7 @@ app.get("/api/associates", async (req, res) => {
   }
 });
 
-app.get("/export", async (req, res) => {
+app.get("/export", authenticateUser, async (req, res) => {
   let { from, to, associates, search } = req.query;
   let url = "";
   let startDate = undefined;

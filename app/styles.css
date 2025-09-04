@@ -40,9 +40,46 @@ body {
 
 /* Header Styles */
 .main-header {
-    text-align: center;
     margin-bottom: 30px;
     padding: 20px 0;
+}
+
+.header-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 20px;
+}
+
+.header-text {
+    text-align: center;
+    flex: 1;
+}
+
+.user-info {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    font-size: 14px;
+    color: var(--secondary-text);
+}
+
+.logout-btn {
+    background: #f44336;
+    color: white;
+    padding: 8px 16px;
+    border: none;
+    border-radius: var(--border-radius);
+    cursor: pointer;
+    font-size: 14px;
+    font-family: inherit;
+    transition: var(--transition);
+}
+
+.logout-btn:hover {
+    background: #d32f2f;
+    transform: translateY(-1px);
 }
 
 .main-header h1 {
